@@ -10,6 +10,6 @@ call odin build src/haversine_gen.odin -file -out:build/haversine_gen.exe -o:spe
 
 call odin build src/haversine_test.odin -file -out:build/haversine_test.exe -o:speed -target-features:"avx2" -debug
 
-call odin build src/math_test.odin -file -out:build/math_test.exe -o:speed -target-features:"avx2" -debug
+call odin build src/math_test.odin -file -out:build/math_test.exe -o:speed -target-features:"avx2,sse2" -debug
 
 endlocal

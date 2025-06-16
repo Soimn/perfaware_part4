@@ -2,6 +2,7 @@ package math_test
 
 import "core:fmt"
 import "core:math"
+import "core:simd/x86"
 
 // Reference values taken from https://github.com/cmuratori/computer_enhance/blob/a83f152e79b1b5b8ff5b1adf8aa9cc9f21d528ed/perfaware/part4/listing_0175_math_check.cpp#L53
 
@@ -99,6 +100,18 @@ SqrtReference :: []Reference_Result{
 	{ 0.051231188245869981, 0.22634307642574353990563961017436878164407501492708325367084901372998301 },
 }
 
+@(enable_target_feature="sse2,ss")
+_mm_sqrt_sd :: proc "contextless" (x: f64) -> f64
+{
+	xmm := x86._mm_set_ss(f32(x))
+
+	xmm = x86._mm_sqrt_ps(xmm)
+
+	result := f64(x86._mm_cvtss_f32(xmm))
+
+	return result
+}
+
 Sin :: proc "contextless" (x: f64) -> f64
 {
 	return 0
@@ -151,11 +164,12 @@ main :: proc()
 		fmt.printf("\n\nTesting custom implementation against Odin math library\n===========================================================\n")
 
 		tests := []struct{ name: string, func: proc "contextless" (f64) -> f64, ref_func: proc "contextless" (f64) -> f64, min: f64, max: f64 }{
-			{  "sin", Sin,  math.sin_f64,  -PI64,    PI64 },
-			{  "sin", Sin,  math.sin_f64, -PI64/2, PI64/2 },
-			{  "cos", Cos,  math.cos_f64, -PI64/2, PI64/2 },
-			{ "asin", ASin, math.asin_f64,      0,      1 },
-			{ "sqrt", Sqrt, math.sqrt_f64,      0,      1 },
+			{         "sin",        Sin,  math.sin_f64,  -PI64,    PI64 },
+			{         "sin",        Sin,  math.sin_f64, -PI64/2, PI64/2 },
+			{         "cos",        Cos,  math.cos_f64, -PI64/2, PI64/2 },
+			{        "asin",        ASin, math.asin_f64,      0,      1 },
+			{        "sqrt",        Sqrt, math.sqrt_f64,      0,      1 },
+			{ "_mm_sqrt_sd", _mm_sqrt_sd, math.sqrt_f64,      0,      1 },
 		}
 
 		fmt.printf("--------------------------------------------------------------------------------------------------------------------------\n")
