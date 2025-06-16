@@ -64,7 +64,7 @@ HaversineSum :: proc($haversine_proc: proc(f64, f64, f64, f64, f64) -> f64) -> (
 		res_pair_count := 1/f64(len(pairs))
 		for i in 0..<len(pairs)
 		{
-			sum += res_pair_count*haversine_proc(pairs[i].x0, pairs[i].y0, pairs[i].x1, pairs[i].y1, EARTH_RADIUS)
+			sum += res_pair_count* #force_inline haversine_proc(pairs[i].x0, pairs[i].y0, pairs[i].x1, pairs[i].y1, EARTH_RADIUS)
 		}
 
 		return sum
